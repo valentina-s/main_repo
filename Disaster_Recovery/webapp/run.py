@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, url_for
 from flask import render_template, session, make_response, flash
+import flask
 import csv
 import time
 import subprocess
@@ -105,24 +106,39 @@ def rescheduling():
     if os.path.isfile(os.path.join('data','flag.txt')):
         os.remove(os.path.join('data','flag.txt'))
         
-    p = subprocess.Popen('python script.py',shell=True,
-            stdout=subprocess.PIPE)
+    # args = ['python','script.py', '>output.txt']
+    args = ['python','script.py','>outout.txt']
+
+
+
+            
+    # p = subprocess.Popen('python script.py > output.txt')
+    p = subprocess.Popen(args)#,shell = True)
     # pickle.dump(subprocess.Popen('python script.py',shell=True,
     #        stdout=subprocess.PIPE),f)
     session['pid'] = p.pid
-    print p.pid
-    return(render_template('thumbsucker.html'))
-    
-    
 
-  
+    return(render_template('thumbsucker.html'))
+     
 
 @app.route("/link/<row>", methods=["GET"])
 def link(row):
     bookingid = session['data_rows'][int(row)][0]
-    return render_template('alternative_options.html', 
-        bookingid = bookingid,
+    busid = session['busid']
+    return redirect(url_for('alternative_options')
         )
+
+@app.route("/alternative_options", methods=["GET"])
+def alternative_options():
+    import pandas as pd
+    schedule = pd.read_csv(os.path.join('data','19931975_schedule.csv'))
+    bookingid = ''
+    busid = session['busid']
+    table = schedule.to_html(index = False)
+    
+    return(render_template("alternative_options.html",table = table,busid = busid,bookingid = bookingid))
+
+
 
 @app.route("/admin", methods=["GET","POST"])
 def admin():
@@ -141,9 +157,13 @@ def admin():
     session['accesskey'] = accesskey
     session['secretkey'] = secretkey
     session['file'] = filename
-    return msg
-
+    #return redirect(url_for('display'))
+    # build in some error statements
+    return render_template('request.html', error = None) 
+    
+  # add flashing statement
   return render_template('admin.html')
+  
 
 @app.route("/thumbsucker/", methods=["GET","POST"])
 def thumbsucker():
