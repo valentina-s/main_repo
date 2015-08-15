@@ -7,6 +7,8 @@ import subprocess
 import pickle
 import os
 
+
+
 app = Flask(__name__)
 
 
@@ -107,13 +109,14 @@ def rescheduling():
         os.remove(os.path.join('data','flag.txt'))
         
     # args = ['python','script.py', '>output.txt']
-    args = ['python','script.py','>outout.txt']
+    args = ['python','script.py']
 
 
 
-            
+    f_out = open('stdout.txt','w')
+    f_err = open('stderr.txt','w')
     # p = subprocess.Popen('python script.py > output.txt')
-    p = subprocess.Popen(args)#,shell = True)
+    p = subprocess.Popen(args,stdout=f_out,stderr = f_err)
     # pickle.dump(subprocess.Popen('python script.py',shell=True,
     #        stdout=subprocess.PIPE),f)
     session['pid'] = p.pid
