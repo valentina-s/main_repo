@@ -1,5 +1,8 @@
  <html>
+ <link rel="stylesheet" type="text/css" href={{ url_for('static',filename='styles/style_sheet.css') }}/>
   <body>
+
+
 <h1>Preferred Options for Riders</h1>
 
 {% if busid %}
@@ -12,6 +15,8 @@
 {% if beginTime %}
 <p>Initial time for rescheduling is {{beginTime}}</p>
 {% endif%}
+
+
 
 <table border="1">
     <th>Booking ID</th>
